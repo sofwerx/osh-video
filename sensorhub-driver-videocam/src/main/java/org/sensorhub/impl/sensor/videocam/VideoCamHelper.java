@@ -201,7 +201,6 @@ public class VideoCamHelper extends SWEHelper
         
         // PTZ Position (supports pan, tilt, and zoom simultaneously
         DataRecord ptzPos = newDataRecord(3);
-        ptzPos.setName("ptzPosition");
         ptzPos.setDefinition(getPropertyUri("PtzPosition"));
         ptzPos.setLabel("Absolute PTZ Position");
         ptzPos.addComponent("pan", pan.copy());
