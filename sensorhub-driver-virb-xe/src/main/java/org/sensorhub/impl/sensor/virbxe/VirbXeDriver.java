@@ -18,16 +18,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import net.opengis.sensorml.v20.IdentifierList;
-import net.opengis.sensorml.v20.Term;
 import org.sensorhub.api.common.SensorHubException;
 import org.sensorhub.api.sensor.SensorException;
 import org.sensorhub.impl.comm.RobustHTTPConnection;
 import org.sensorhub.impl.security.ClientAuth;
 import org.sensorhub.impl.sensor.AbstractSensorModule;
 import org.sensorhub.impl.sensor.rtpcam.RTSPClient;
-import org.vast.sensorML.SMLFactory;
-import org.vast.swe.SWEHelper;
+import org.vast.sensorML.SMLHelper;
 import com.google.gson.Gson;
 
 
@@ -206,50 +203,18 @@ public class VirbXeDriver extends AbstractSensorModule<VirbXeConfig>
         {
             super.updateSensorDescription();
             
-            SMLFactory smlFac = new SMLFactory();
-            sensorDescription.setDescription("Garmin VIRB-XE camera with GPS and Orientation" );            
+            if (!sensorDescription.isSetDescription())
+                sensorDescription.setDescription("Garmin camera with GPS and orientation" );            
             
-            IdentifierList ident = smlFac.newIdentifierList();
-            sensorDescription.getIdentificationList().add(ident);
-            Term term;
-            
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("Manufacturer"));
-            term.setLabel("Manufacturer Name");
-            term.setValue("Garmin");
-            ident.addIdentifier2(term);
-            
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("ModelNumber"));
-            term.setLabel("Model Number");
-            term.setValue(modelNumber);
-            ident.addIdentifier2(term);
-            
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("SerialNumber"));
-            term.setLabel("Serial Number");
-            term.setValue(serialNumber);
-            ident.addIdentifier2(term);
-            
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("Firmware"));
-            term.setLabel("Firmware");
-            term.setValue(firmware);
-            ident.addIdentifier2(term);
-            
-            // Long Name
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("LongName"));
-            term.setLabel("Long Name");
-            term.setValue("Garmin " + modelNumber + " Video Camera #" + serialNumber);
-            ident.addIdentifier2(term);
-        
-            // Short Name
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("ShortName"));
-            term.setLabel("Short Name");
-            term.setValue("Garmin " + modelNumber);
-            ident.addIdentifier2(term);
+            // add identifiers
+            SMLHelper helper = new SMLHelper(sensorDescription);
+            helper.addShortName("Garmin Cam" + (modelNumber != null ? " " + modelNumber : ""));
+            helper.addLongName("Garmin" + (modelNumber != null ? " " + modelNumber : "") + " Video Camera");
+            helper.addManufacturerName("Garmin");
+            if (modelNumber != null)
+                helper.addModelNumber(modelNumber);
+            if (serialNumber != null)
+                helper.addSerialNumber(serialNumber);
         }
     }
 

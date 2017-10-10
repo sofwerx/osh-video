@@ -17,10 +17,7 @@ package org.sensorhub.impl.sensor.onvif;
 
 import java.net.ConnectException;
 import java.util.List;
-
 import javax.xml.soap.SOAPException;
-
-import net.opengis.sensorml.v20.IdentifierList;
 import org.sensorhub.api.sensor.SensorException;
 import org.sensorhub.impl.sensor.AbstractSensorModule;
 import org.sensorhub.impl.sensor.rtpcam.RTPVideoOutput;
@@ -28,9 +25,9 @@ import org.onvif.ver10.schema.H264Configuration;
 import org.onvif.ver10.schema.Mpeg4Configuration;
 import org.onvif.ver10.schema.Profile;
 import org.sensorhub.api.common.SensorHubException;
-import org.vast.sensorML.SMLFactory;
-
+import org.vast.sensorML.SMLHelper;
 import de.onvif.soap.OnvifDevice;
+
 
 /**
  * <p>
@@ -41,7 +38,6 @@ import de.onvif.soap.OnvifDevice;
  * @author Joshua Wolfe <developer.wolfe@gmail.com>
  * @since June 13, 2017
  */
-
 public class OnvifCameraDriver extends AbstractSensorModule <OnvifCameraConfig>
 {
     RTPVideoOutput <OnvifCameraDriver> h264VideoOutput;
@@ -64,6 +60,7 @@ public class OnvifCameraDriver extends AbstractSensorModule <OnvifCameraConfig>
     String modelNumber;
     String shortName;
     String longName;
+    String manufacturer;
     String imageSize;
     
     public OnvifCameraDriver() {
@@ -126,10 +123,11 @@ public class OnvifCameraDriver extends AbstractSensorModule <OnvifCameraConfig>
 			throw new SensorHubException("Camera does not have any profiles capable of PTZ");
         }
         
+		manufacturer = camera.getDevices().getDeviceInformation().getManufacturer().trim();
+		modelNumber = camera.getDevices().getDeviceInformation().getModel().trim();
         serialNumber = camera.getDevices().getDeviceInformation().getSerialNumber().trim();
-        modelNumber = camera.getDevices().getDeviceInformation().getModel().trim();
-        shortName = camera.getDevices().getDeviceInformation().getManufacturer().trim();
-        longName = shortName + "_" + modelNumber + "_" + serialNumber;
+        shortName = manufacturer + " " + modelNumber;
+        longName = shortName + " Video Camera";
         
         // generate identifiers
         generateUniqueID("urn:onvif:cam:", serialNumber);
@@ -203,13 +201,21 @@ public class OnvifCameraDriver extends AbstractSensorModule <OnvifCameraConfig>
             // and then sets unique ID, outputs and control inputs
             super.updateSensorDescription();
 
-            SMLFactory smlFac = new SMLFactory();
-
             if (!sensorDescription.isSetDescription())
                 sensorDescription.setDescription("ONVIF Video Camera");
 
-            IdentifierList identifierList = smlFac.newIdentifierList();
-            sensorDescription.addIdentification(identifierList);
+            // add identifiers
+            SMLHelper helper = new SMLHelper(sensorDescription);
+            if (shortName != null)
+                helper.addShortName(shortName);
+            if (longName != null)
+                helper.addLongName(longName);
+            if (manufacturer != null)
+                helper.addManufacturerName(manufacturer);
+            if (modelNumber != null)
+                helper.addModelNumber(modelNumber);
+            if (serialNumber != null)
+                helper.addSerialNumber(serialNumber);
         }
     }
 

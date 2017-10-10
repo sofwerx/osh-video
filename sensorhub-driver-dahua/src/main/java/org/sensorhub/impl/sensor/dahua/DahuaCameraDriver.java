@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import net.opengis.sensorml.v20.IdentifierList;
-import net.opengis.sensorml.v20.Term;
 import org.sensorhub.api.common.SensorHubException;
 import org.sensorhub.api.sensor.SensorException;
 import org.sensorhub.impl.comm.RobustHTTPConnection;
@@ -30,8 +28,7 @@ import org.sensorhub.impl.module.RobustConnection;
 import org.sensorhub.impl.security.ClientAuth;
 import org.sensorhub.impl.sensor.AbstractSensorModule;
 import org.sensorhub.impl.sensor.rtpcam.RTSPClient;
-import org.vast.sensorML.SMLFactory;
-import org.vast.swe.SWEHelper;
+import org.vast.sensorML.SMLHelper;
 
 
 /**
@@ -274,53 +271,18 @@ public class DahuaCameraDriver extends AbstractSensorModule<DahuaCameraConfig>
             // and then sets unique ID, outputs and control inputs
             super.updateSensorDescription();
             
-            // set identifiers in SensorML
-            SMLFactory smlFac = new SMLFactory();            
-
             if (!sensorDescription.isSetDescription())
-                sensorDescription.setDescription("Dahua Video Camera " + modelNumber);
+                sensorDescription.setDescription("Dahua Video Camera");
           
-            IdentifierList identifierList = smlFac.newIdentifierList();
-            sensorDescription.addIdentification(identifierList);
-            
-            Term term;            
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("Manufacturer"));
-            term.setLabel("Manufacturer Name");
-            term.setValue("Dahua");
-            identifierList.addIdentifier2(term);
-            
+            // add identifiers
+            SMLHelper helper = new SMLHelper(sensorDescription);
+            helper.addShortName("Dahua Cam" + (modelNumber != null ? " " + modelNumber : ""));
+            helper.addLongName("Dahua" + (modelNumber != null ? " " + modelNumber : "") + " Video Camera");
+            helper.addManufacturerName("Dahua");
             if (modelNumber != null)
-            {
-                term = smlFac.newTerm();
-                term.setDefinition(SWEHelper.getPropertyUri("ModelNumber"));
-                term.setLabel("Model Number");
-                term.setValue(modelNumber);
-                identifierList.addIdentifier2(term);
-            }
-            
+                helper.addModelNumber(modelNumber);
             if (serialNumber != null)
-            {
-                term = smlFac.newTerm();
-                term.setDefinition(SWEHelper.getPropertyUri("SerialNumber"));
-                term.setLabel("Serial Number");
-                term.setValue(serialNumber);
-                identifierList.addIdentifier2(term);
-            }
-            
-            // Long Name
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("LongName"));
-            term.setLabel("Long Name");
-            term.setValue("Dahua " + modelNumber + " Video Camera #" + serialNumber);
-            identifierList.addIdentifier2(term);
-
-            // Short Name
-            term = smlFac.newTerm();
-            term.setDefinition(SWEHelper.getPropertyUri("ShortName"));
-            term.setLabel("Short Name");
-            term.setValue("Dahua Cam " + modelNumber);
-            identifierList.addIdentifier2(term);
+                helper.addSerialNumber(serialNumber);
         }
     }
 

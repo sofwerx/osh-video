@@ -185,7 +185,7 @@ public class DahuaPtzOutput extends AbstractSensorOutput<DahuaCameraDriver>
         }
         catch (Exception e)
         {
-            getParentModule().getLogger().error("Error requesting PTZ status", e);
+            getParentProducer().getLogger().error("Error requesting PTZ status", e);
         }
         finally
         {

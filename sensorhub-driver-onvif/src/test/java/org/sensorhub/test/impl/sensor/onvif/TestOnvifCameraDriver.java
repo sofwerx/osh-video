@@ -15,50 +15,27 @@ Developer are Copyright (C) 2014 the Initial Developer. All Rights Reserved.
 
 package org.sensorhub.test.impl.sensor.onvif;
 
-import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-import javax.xml.ws.EndpointReference;
-
 import net.opengis.sensorml.v20.AbstractProcess;
 import net.opengis.swe.v20.DataBlock;
 import net.opengis.swe.v20.DataComponent;
-
-import org.apache.cxf.ws.discovery.WSDiscoveryClient;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.onvif.ver10.schema.FloatRange;
-import org.onvif.ver10.schema.PTZConfiguration;
-import org.onvif.ver10.schema.PTZVector;
-import org.onvif.ver10.schema.Profile;
-import org.onvif.ver10.schema.VideoSource;
 import org.sensorhub.api.common.CommandStatus;
 import org.sensorhub.api.common.Event;
 import org.sensorhub.api.common.IEventListener;
 import org.sensorhub.api.sensor.ISensorControlInterface;
 import org.sensorhub.api.sensor.ISensorDataInterface;
 import org.sensorhub.api.sensor.SensorDataEvent;
-import org.sensorhub.impl.security.ClientAuth;
 import org.sensorhub.impl.sensor.onvif.OnvifCameraConfig;
 import org.sensorhub.impl.sensor.onvif.OnvifCameraDriver;
-import org.sensorhub.test.sensor.videocam.VideoTestHelper;
 import org.vast.data.DataChoiceImpl;
 import org.vast.sensorML.SMLUtils;
 import org.vast.swe.SWEUtils;
-
-import de.onvif.discovery.OnvifDiscovery;
-import de.onvif.discovery.OnvifPointer;
-import de.onvif.soap.OnvifDevice;
-import de.onvif.soap.SOAP;
-import de.onvif.soap.devices.PtzDevices;
-
 import static org.junit.Assert.*;
+
 
 /**
  * <p>
@@ -67,8 +44,6 @@ import static org.junit.Assert.*;
  *
  * @author Joshua Wolfe <developer.wolfe@gmail.com>
  */
-
-
 public class TestOnvifCameraDriver implements IEventListener
 {
 	final static int MAX_FRAMES = 300;
@@ -124,7 +99,7 @@ public class TestOnvifCameraDriver implements IEventListener
     	Map<String, ISensorControlInterface> cmdInputs = driver.getCommandInputs();
     	assertTrue(cmdInputs.containsKey("ptzControl"));
     	
-    	Map<String, ISensorDataInterface> outputs = driver.getAllOutputs();
+    	Map<String, ISensorDataInterface> outputs = driver.getOutputs();
     	assertTrue(outputs.containsKey("ptzOutput"));
     	
         // register listeners
